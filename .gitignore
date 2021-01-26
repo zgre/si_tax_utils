@@ -1,0 +1,8 @@
+venv
+output.xml
+input.txt
+*.xml
+interests.csv
+dividends.csv
+FT_CSV_*.csv
+Makexml/**
