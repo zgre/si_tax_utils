@@ -3,6 +3,8 @@
 import csv
 from operator import itemgetter
 import getopt,sys
+from collections import defaultdict
+
 
 year = '2020'
 input_trades = 'SAMPLE_FT_CSV.csv'
@@ -102,12 +104,28 @@ def main(argv):
 
         # Filter out trades with last ticker action Buy (e.g.  Buy, Sell, Buy)
         new_sell_trades = []
-        for trade in sell_trades:
-            if last_trades[trade['Ticker']][0] == 'Buy':
-                last_trades[trade['Ticker']]
-                if not trade['Transaction Id'] == last_trades[trade['Ticker']][1]:
-                    new_sell_trades.append(trade)
+        gain_loss = {} 
+        gain_loss = defaultdict(lambda:0,gain_loss)
 
+        for trade in sell_trades:
+
+            if last_trades[trade['Ticker']][0] != 'Buy' or trade['Transaction Id'] != last_trades[trade['Ticker']][1]:
+                new_sell_trades.append(trade)
+                if trade['Transaction Type'] == 'Buy':
+                    gain_loss[trade['Ticker']] -= int(trade['Shares']) * float(trade['Price'])
+                else:
+                    gain_loss[trade['Ticker']] += int(trade['Shares']) * float(trade['Price'])
+            else:
+                print(f'Skipping buy trade {trade} since it has no sell')    
+            
+        overall_gain = 0
+        for ticker in gain_loss:
+            gain = round(gain_loss[ticker],2)
+            print(f'Gain/loss for {ticker}: {gain}')
+            overall_gain += gain
+
+        print(f'Gain/loss: {round(overall_gain,2)}')
+        print(f'Verify this Gain/loss with reported Gain/loss for this year {year} in Firstrade. ')
         writer.writerows(new_sell_trades)
 
     with open(dividends_out, 'w', newline='') as divfile:
