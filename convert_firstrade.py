@@ -63,8 +63,7 @@ def main(argv):
                                     'Transaction Type': row['Action'],
                                     'Date': row['TradeDate'].strip(),
                                     'Shares': int(abs(float(row['Quantity'].strip()))),
-                                    'Price': row['Amount'].strip(),
-                                    'ValidLoss': 'false'})
+                                    'Price': row['Amount'].strip()})
                 elif row['Action'] == 'Interest':
                     if year in row['TradeDate']:
                         interests.append({'Transaction Type': row['Action'],
@@ -75,10 +74,14 @@ def main(argv):
                                 'Transaction Type': transaction_type,
                                 'Date': row['TradeDate'].strip(),
                                 'Shares': int(abs(float(row['Quantity'].strip()))),
-                                'Price': row['Price'].strip()})    
+                                'Price': row['Price'].strip(),
+                                'ValidLoss': 'false'})    
                         
     sorted_transactions = sorted(transactions, key=itemgetter('Ticker', 'Date'))        
+    # internal transaction id count for the ticker
     found_ticker = {}
+    # remember last trades for filtering
+    last_trades = {}
     # header Ticker;Transaction Id;Transaction Type (Buy/Sell/SellShort/BuyCover);Date;Shares;Price;Loss Valid (true/false)
     fieldnames = ['Ticker','Transaction Id','Transaction Type','Date','Shares','Price','ValidLoss']
     with open(output_trades, 'w', newline='') as csvfile:
@@ -86,6 +89,7 @@ def main(argv):
         writer = csv.DictWriter(csvfile, delimiter=';', fieldnames=fieldnames)
         #writer.writeheader()
         print(f'Writing trades into: {output_trades}')
+        sell_trades = []
         for t in sorted_transactions:
             if t['Ticker'] in found_ticker:
                 found_ticker[t['Ticker']] = found_ticker[t['Ticker']] + 1
@@ -93,7 +97,18 @@ def main(argv):
                 found_ticker[t['Ticker']] = 0
             if t['Ticker'] in year_sells:
                 t['Transaction Id'] = found_ticker[t['Ticker']]
-                writer.writerow(t)
+                sell_trades.append(t)
+                last_trades[t['Ticker']] = (t['Transaction Type'], t['Transaction Id'])
+
+        # Filter out trades with last ticker action Buy (e.g.  Buy, Sell, Buy)
+        new_sell_trades = []
+        for trade in sell_trades:
+            if last_trades[trade['Ticker']][0] == 'Buy':
+                last_trades[trade['Ticker']]
+                if not trade['Transaction Id'] == last_trades[trade['Ticker']][1]:
+                    new_sell_trades.append(trade)
+
+        writer.writerows(new_sell_trades)
 
     with open(dividends_out, 'w', newline='') as divfile:
         print(f'Writing dividends into: {dividends_out}')

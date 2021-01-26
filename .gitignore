@@ -1,6 +1,6 @@
 venv
 output.xml
-input.txt
+input.*
 *.xml
 interests.csv
 dividends.csv
