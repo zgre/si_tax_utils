@@ -10,7 +10,7 @@ Input format on firstrade.com can be found here:
 
 Download Account information and select Excel CSV files
 
-![Screenshot](https://github.com/zgre/si_tax_utils/firstrade.png?raw=true)
+![Screenshot](https://github.com/zgre/si_tax_utils/blob/master/firstrade.png?raw=true)
 
 [Sample file](./SAMPLE_FT_CSV.csv) 
 
