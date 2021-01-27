@@ -1,7 +1,9 @@
-# Convert Firstrade tax data into Makexml format (SI TAX - EDavki)
+# Convert tax data into Makexml format (SI TAX - EDavki)
+
+## Firstrade
 
 ```
-convert_firstrade.py -i FT_CSV_SAMPLE.csv [-y 2020]
+convert_firstrade.py -i SAMPLE_FT_CSV.csv [-y 2020]
 ```
 
 Input format on firstrade.com can be found here:
@@ -30,6 +32,14 @@ Output:
     Writing dividends into: dividends.csv
     
     Writing interests into: interests.csv
+
+
+## ETORO
+
+```
+convert_etoro.py -i SAMPLE_ETORO_CSV.csv [-y 2020]
+```
+
 
 [Makexml and other tools](http://slotrade.blogspot.com/p/orodja.html)
 
