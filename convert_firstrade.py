@@ -77,7 +77,7 @@ def main(argv):
                                 'Date': row['TradeDate'].strip(),
                                 'Shares': int(abs(float(row['Quantity'].strip()))),
                                 'Price': row['Price'].strip(),
-                                'ValidLoss': 'false'})    
+                                'ValidLoss': 'true'})    
                         
     sorted_transactions = sorted(transactions, key=itemgetter('Ticker', 'Date'))        
     # internal transaction id count for the ticker
