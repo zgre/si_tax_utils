@@ -14,6 +14,15 @@ Download Account information and select Excel CSV files
 
 [Sample file](./SAMPLE_FT_CSV.csv) 
 
+Supported transactions:
+
+```
+Buy
+Sell
+Interest
+Dividend
+```
+
 Output:
     
     Writing trades into: input.txt
