@@ -1,4 +1,4 @@
-# Convert tax data into Makexml format (SI TAX - EDavki)
+# Convert trade data into Makexml format (SI TAX - EDavki)
 
 ## Firstrade
 
