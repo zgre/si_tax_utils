@@ -23,6 +23,8 @@ def main(argv):
     global input_trades
 
     year_sells = {}
+    #Remember sell amount and use it when calculating gain_loss
+    sell_amount = {}
     transactions = []
     dividends = []
     interests = []
@@ -57,6 +59,9 @@ def main(argv):
                     transaction_type = 'Buy'
                 elif row['Action'] == 'SELL':    
                     transaction_type = 'Sell'
+                    if row['Symbol'].strip() not in sell_amount:
+                        sell_amount[row['Symbol'].strip()] = []
+                    sell_amount[row['Symbol'].strip()].append(int(abs(float(row['Quantity'].strip()))))
                     if year in row['TradeDate']:
                         year_sells[row['Symbol'].strip()] = True
                 elif row['Action'] == 'Dividend':
@@ -77,9 +82,10 @@ def main(argv):
                                 'Date': row['TradeDate'].strip(),
                                 'Shares': int(abs(float(row['Quantity'].strip()))),
                                 'Price': row['Price'].strip(),
-                                'ValidLoss': 'true'})    
+                                'ValidLoss': 'true'})
                         
-    sorted_transactions = sorted(transactions, key=itemgetter('Ticker', 'Date'))        
+    #Sort also by Transaction Type to get buys before Sells for daytrades
+    sorted_transactions = sorted(transactions, key=itemgetter('Ticker', 'Date', 'Transaction Type'))        
     # internal transaction id count for the ticker
     found_ticker = {}
     # remember last trades for filtering
@@ -109,10 +115,12 @@ def main(argv):
 
         for trade in sell_trades:
 
+            print(trade)
             if last_trades[trade['Ticker']][0] != 'Buy' or trade['Transaction Id'] != last_trades[trade['Ticker']][1]:
                 new_sell_trades.append(trade)
                 if trade['Transaction Type'] == 'Buy':
-                    gain_loss[trade['Ticker']] -= int(trade['Shares']) * float(trade['Price'])
+                    gain_loss[trade['Ticker']] -= sell_amount[trade['Ticker']][0] * float(trade['Price'])
+                    sell_amount[trade['Ticker']].pop(0)
                 else:
                     gain_loss[trade['Ticker']] += int(trade['Shares']) * float(trade['Price'])
             else:
